@@ -1,13 +1,31 @@
 package com.follodota;
 
+import java.util.ArrayList;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Activity;
+import android.app.DownloadManager.Request;
+import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 
+import com.android.volley.Response.Listener;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.Volley;
 import com.follodota.dummy.DummyContent;
+import com.follodota.models.Match;
+import com.follodota.utils.FolloDotaRequest;
+import com.follodota.utils.MatchesListAdapter;
 
 /**
  * A list fragment representing a list of matches. This fragment
@@ -19,7 +37,8 @@ import com.follodota.dummy.DummyContent;
  * interface.
  */
 public class matchListFragment extends ListFragment {
-
+	private static final String TAG = "follodota.listfragment";
+	private static final String matchesIndexApi = "http://follodota.herokuapp.com/api/v1/matches.json";
     /**
      * The serialization (saved instance state) Bundle key representing the
      * activated item position. Only used on tablets.
@@ -70,12 +89,38 @@ public class matchListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // TODO: replace with a real list adapter.
-        setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(
-                getActivity(),
-                android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
-                DummyContent.ITEMS));
+		JsonArrayRequest listRequest = new JsonArrayRequest(matchesIndexApi, new Listener<JSONArray>() {
+
+			@Override
+			public void onResponse(JSONArray response) {
+				ArrayList<Match> matchesList = new ArrayList<Match>();
+				try {
+					Log.d(TAG, response.getString(0));
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				for(int i=0; i<response.length(); i++){
+					Match m=null;
+					try {
+						m = new Match(response.getJSONObject(i));
+					} catch (JSONException e) {
+						Log.e(TAG, e.getMessage());
+					}
+					if (m!=null)matchesList.add(m);
+				}
+				MatchesListAdapter mAdapter = new MatchesListAdapter(matchListFragment.this.getActivity()
+						, 0, 0, matchesList);
+				matchListFragment.this.setListAdapter(mAdapter);
+			}
+		}, null);
+//        setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(
+//                getActivity(),
+//                android.R.layout.simple_list_item_activated_1,
+//                android.R.id.text1,
+//                DummyContent.ITEMS));
+		//call the api!
+		FolloDotaRequest.getInstance(getActivity()).addRequest(listRequest);
     }
 
     @Override

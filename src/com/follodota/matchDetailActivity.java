@@ -40,6 +40,7 @@ public class matchDetailActivity extends FragmentActivity {
             Bundle arguments = new Bundle();
             arguments.putString(matchDetailFragment.ARG_ITEM_ID,
                     getIntent().getStringExtra(matchDetailFragment.ARG_ITEM_ID));
+            //TODO: @thearith instantiate the fragment (which u implemented,) here:
             matchDetailFragment fragment = new matchDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
