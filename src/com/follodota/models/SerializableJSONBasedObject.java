@@ -74,6 +74,14 @@ public abstract class SerializableJSONBasedObject implements Serializable{
 	
 	/**
 	 * 
+	 * @return Raw JSON form of the object
+	 */
+	public JSONObject getJSON(){
+		return mObject;
+	
+	}
+	/**
+	 * 
 	 * @param key
 	 * @return the array with key "key", or null if none exist
 	 */
