@@ -35,7 +35,7 @@ public class matchDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments().containsKey(SELECTED_MATCH)) {
             mMatch = (Match) getArguments().getSerializable(SELECTED_MATCH);
-            Log.d("detail fragment", mMatch.toString());
+            Log.d("detail fragment", mMatch.getAllGames().get(0).getYoutubeLink());
         }
     }
 

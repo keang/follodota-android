@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,7 +23,9 @@ public abstract class SerializableJSONBasedObject implements Serializable{
 
 	abstract String getTag();
 	protected JSONObject mObject;
-	
+	public SerializableJSONBasedObject(JSONObject o) {
+		mObject = o;
+	}
 	/**
 	 * Try to find "key" in mObject, logs the error if any.
 	 * @param key
@@ -31,7 +34,7 @@ public abstract class SerializableJSONBasedObject implements Serializable{
 	protected String getString(String key){
 		String string = null;
 		try {
-			string = mObject.getString("key");
+			string = mObject.getString(key);
 		} catch (JSONException e) {
 			Log.e(getTag(), e.getMessage());
 		}
@@ -53,6 +56,37 @@ public abstract class SerializableJSONBasedObject implements Serializable{
 		}
 		return string;
 	}	
+	
+	/**
+	 * 
+	 * @param key
+	 * @return the object with key "key", or null if none exist
+	 */
+	protected JSONObject getJSONObject(String key){
+		JSONObject object=null;
+		try {
+			object = mObject.getJSONObject(key);
+		} catch (JSONException e) {
+			Log.e(getTag(), e.getMessage());
+		}
+		return object;
+	}
+	
+	/**
+	 * 
+	 * @param key
+	 * @return the array with key "key", or null if none exist
+	 */
+	protected JSONArray getJSONArray(String key){
+		JSONArray object=null;
+		try {
+			object = mObject.getJSONArray(key);
+		} catch (JSONException e) {
+			Log.e(getTag(), e.getMessage());
+		}
+		return object;
+		
+	}
     
 	/**
     * Serializable implementation
