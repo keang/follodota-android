@@ -25,10 +25,6 @@ public class Team extends SerializableJSONBasedObject{
 	public int getLogoResourceId(Context ctx){
 		int id = ctx.getResources().getIdentifier("logo"+getString("logo_x")+"_"+getString("logo_y"), "drawable",
 		        ctx.getPackageName());
-<<<<<<< HEAD
-=======
-		Log.e("get resource id", Integer.toString(id));
->>>>>>> 42335d6e14e0bf635d6ea2d19b88d20e86dc3f14
 		return id;
 	}
 }

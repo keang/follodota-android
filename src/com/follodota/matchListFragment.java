@@ -164,10 +164,6 @@ public class matchListFragment extends ListFragment {
     			rowView.setTag(holder);
     		}
     		if(holder==null) holder = (ViewHolder) rowView.getTag();
-<<<<<<< HEAD
-=======
-    		Log.e(TAG, ((Match)mList.get(position)).getHomeTeam().getJSON().toString());
->>>>>>> 42335d6e14e0bf635d6ea2d19b88d20e86dc3f14
     		holder.hometeam.setImageResource(((Match)mList.get(position)).getHomeTeam().getLogoResourceId(mContext));
     		holder.awayteam.setImageResource(((Match)mList.get(position)).getAwayTeam().getLogoResourceId(mContext));
     		return rowView;
