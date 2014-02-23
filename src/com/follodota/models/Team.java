@@ -3,7 +3,6 @@ package com.follodota.models;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.util.Log;
 
 public class Team extends SerializableJSONBasedObject{
 	private static final long serialVersionUID = 2705498849640071860L;

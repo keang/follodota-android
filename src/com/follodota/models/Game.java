@@ -9,6 +9,10 @@ public class Game extends SerializableJSONBasedObject{
 
 	private static final long serialVersionUID = 1127355230567509529L;
 
+	/**
+	 * 
+	 * @return steam's match id to be used in the api for match details
+	 */
 	public String getSteamGameID(){
 		//steam calls it match_id, we call it gameID
 		//at follodota one match have many games
