@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -158,13 +159,13 @@ public class matchListFragment extends ListFragment {
     		        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     			rowView = inflater.inflate(R.layout.list_item_match, parent, false);
     			holder = new ViewHolder();
-    			holder.hometeam = (TextView) rowView.findViewById(R.id.hometeam);
-    			holder.awayteam = (TextView) rowView.findViewById(R.id.awayteam);
+    			holder.hometeam = (ImageView) rowView.findViewById(R.id.hometeam);
+    			holder.awayteam = (ImageView) rowView.findViewById(R.id.awayteam);
     			rowView.setTag(holder);
     		}
     		if(holder==null) holder = (ViewHolder) rowView.getTag();
-    		holder.hometeam.setText(((Match)mList.get(position)).getHomeTeam());
-    		holder.awayteam.setText(((Match)mList.get(position)).getAwayTeam());	
+    		holder.hometeam.setImageResource(((Match)mList.get(position)).getHomeTeam().getLogoResourceId(mContext));
+    		holder.awayteam.setImageResource(((Match)mList.get(position)).getAwayTeam().getLogoResourceId(mContext));
     		return rowView;
     	}
 
@@ -184,8 +185,8 @@ public class matchListFragment extends ListFragment {
     	}
     	
     	class ViewHolder{
-    		public TextView hometeam;
-    		public TextView awayteam;
+    		public ImageView hometeam;
+    		public ImageView awayteam;
     	}
     }
 

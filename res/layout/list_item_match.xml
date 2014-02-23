@@ -5,12 +5,12 @@
     android:orientation="horizontal" 
     android:gravity="center">
 
-    <TextView
+    <ImageView
         android:id="@+id/hometeam"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView" 
-        android:textAppearance="@android:style/TextAppearance.Large"/>
+        android:src="@drawable/ic_launcher"
+        android:contentDescription="@string/hometeam_logo_description" />
 
     <TextView
         android:id="@+id/vs"
@@ -18,11 +18,11 @@
         android:layout_height="wrap_content"
         android:text=" vs " />
 
-    <TextView
+    <ImageView
         android:id="@+id/awayteam"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView" 
-        android:textAppearance="@android:style/TextAppearance.Large"/>
+        android:contentDescription="@string/awayteam_logo_description"
+        android:src="@drawable/ic_launcher" />
 
 </LinearLayout>

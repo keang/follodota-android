@@ -14,12 +14,12 @@ public class Match extends SerializableJSONBasedObject{
 
 	private static final long serialVersionUID = 6376691382150876370L;
     
-	public String getHomeTeam(){
-		return getString("home_team", "name");
+	public Team getHomeTeam(){
+		return new Team(getJSONObject("home_team"));
 	}
 	
-	public String getAwayTeam(){
-		return getString("away_team", "name");
+	public Team getAwayTeam(){
+		return new Team(getJSONObject("away_team"));
 	}
 	
 	public ArrayList<Game> getAllGames(){

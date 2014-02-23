@@ -2,8 +2,6 @@ package com.follodota.models;
 
 import org.json.JSONObject;
 
-import android.util.Log;
-
 public class Game extends SerializableJSONBasedObject{
 	public Game(JSONObject o) {
 		super(o);

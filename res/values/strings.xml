@@ -3,5 +3,7 @@
 
     <string name="app_name">Follodota</string>
     <string name="title_match_detail">match Detail</string>
+    <string name="awayteam_logo_description">Away Team Logo</string>
+    <string name="hometeam_logo_description">Home Team Logo</string>
 
 </resources>
