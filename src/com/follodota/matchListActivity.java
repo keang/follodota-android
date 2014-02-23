@@ -1,5 +1,7 @@
 package com.follodota;
 
+import com.follodota.models.Match;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -16,11 +18,8 @@ import android.support.v4.app.FragmentActivity;
  * {@link matchListFragment} and the item details (if present) is a
  * {@link matchDetailFragment}.
  * <p>
- * This activity also implements the required
- * {@link matchListFragment.Callbacks} interface to listen for item selections.
  */
-public class matchListActivity extends FragmentActivity implements
-		matchListFragment.Callbacks {
+public class matchListActivity extends FragmentActivity{
 
 	/**
 	 * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -49,18 +48,14 @@ public class matchListActivity extends FragmentActivity implements
 		// TODO: If exposing deep links into your app, handle intents here.
 	}
 
-	/**
-	 * Callback method from {@link matchListFragment.Callbacks} indicating that
-	 * the item with the given ID was selected.
-	 */
-	@Override
-	public void onItemSelected(String id) {
+
+	public void onMatchSelected(Match match) {
 		if (mTwoPane) {
 			// In two-pane mode, show the detail view in this activity by
 			// adding or replacing the detail fragment using a
 			// fragment transaction.
 			Bundle arguments = new Bundle();
-			arguments.putString(matchDetailFragment.ARG_ITEM_ID, id);
+			arguments.putSerializable(matchDetailFragment.SELECTED_MATCH, match);
 			matchDetailFragment fragment = new matchDetailFragment();
 			fragment.setArguments(arguments);
 			getSupportFragmentManager().beginTransaction()
@@ -70,7 +65,7 @@ public class matchListActivity extends FragmentActivity implements
 			// In single-pane mode, simply start the detail activity
 			// for the selected item ID.
 			Intent detailIntent = new Intent(this, matchDetailActivity.class);
-			detailIntent.putExtra(matchDetailFragment.ARG_ITEM_ID, id);
+			detailIntent.putExtra(matchDetailFragment.SELECTED_MATCH, match);
 			startActivity(detailIntent);
 		}
 	}

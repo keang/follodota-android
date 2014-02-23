@@ -1,31 +1,26 @@
 package com.follodota;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.Activity;
-import android.app.DownloadManager.Request;
-import android.database.DataSetObserver;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 import com.android.volley.Response.Listener;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.Volley;
-import com.follodota.dummy.DummyContent;
 import com.follodota.models.Match;
 import com.follodota.utils.FolloDotaRequest;
-import com.follodota.utils.MatchesListAdapter;
 
 /**
  * A list fragment representing a list of matches. This fragment
@@ -46,37 +41,10 @@ public class matchListFragment extends ListFragment {
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
 
     /**
-     * The fragment's current callback object, which is notified of list item
-     * clicks.
-     */
-    private Callbacks mCallbacks = sDummyCallbacks;
-
-    /**
      * The current activated item position. Only used on tablets.
      */
     private int mActivatedPosition = ListView.INVALID_POSITION;
 
-    /**
-     * A callback interface that all activities containing this fragment must
-     * implement. This mechanism allows activities to be notified of item
-     * selections.
-     */
-    public interface Callbacks {
-        /**
-         * Callback for when an item has been selected.
-         */
-        public void onItemSelected(String id);
-    }
-
-    /**
-     * A dummy implementation of the {@link Callbacks} interface that does
-     * nothing. Used only when this fragment is not attached to an activity.
-     */
-    private static Callbacks sDummyCallbacks = new Callbacks() {
-        @Override
-        public void onItemSelected(String id) {
-        }
-    };
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -94,12 +62,6 @@ public class matchListFragment extends ListFragment {
 			@Override
 			public void onResponse(JSONArray response) {
 				ArrayList<Match> matchesList = new ArrayList<Match>();
-				try {
-					Log.d(TAG, response.getString(0));
-				} catch (JSONException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
 				for(int i=0; i<response.length(); i++){
 					Match m=null;
 					try {
@@ -110,16 +72,11 @@ public class matchListFragment extends ListFragment {
 					if (m!=null)matchesList.add(m);
 				}
 				MatchesListAdapter mAdapter = new MatchesListAdapter(matchListFragment.this.getActivity()
-						, 0, 0, matchesList);
+						, matchesList);
 				matchListFragment.this.setListAdapter(mAdapter);
 			}
 		}, null);
-//        setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(
-//                getActivity(),
-//                android.R.layout.simple_list_item_activated_1,
-//                android.R.id.text1,
-//                DummyContent.ITEMS));
-		//call the api!
+		//calling the api!
 		FolloDotaRequest.getInstance(getActivity()).addRequest(listRequest);
     }
 
@@ -137,30 +94,18 @@ public class matchListFragment extends ListFragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-
-        // Activities containing this fragment must implement its callbacks.
-        if (!(activity instanceof Callbacks)) {
-            throw new IllegalStateException("Activity must implement fragment's callbacks.");
-        }
-
-        mCallbacks = (Callbacks) activity;
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-
-        // Reset the active callbacks interface to the dummy implementation.
-        mCallbacks = sDummyCallbacks;
     }
 
     @Override
     public void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
-
-        // Notify the active callbacks interface (the activity, if the
-        // fragment is attached to one) that an item has been selected.
-        mCallbacks.onItemSelected(DummyContent.ITEMS.get(position).id);
+        ((matchListActivity)getActivity())
+        	.onMatchSelected((Match) listView.getItemAtPosition(position));
     }
 
     @Override
@@ -193,4 +138,56 @@ public class matchListFragment extends ListFragment {
 
         mActivatedPosition = position;
     }
+    
+
+    private class MatchesListAdapter extends BaseAdapter{
+    	private final Context mContext;
+    	private final List<Match> mList;
+    	public MatchesListAdapter(Context context,List<Match> objects) {
+    		super();
+    		mContext = context;
+    		mList = objects;
+    	}
+
+    	@Override
+    	public View getView(int position, View convertView, ViewGroup parent) {
+    		View rowView = convertView;
+    		ViewHolder holder = null;
+    		if(rowView ==null){
+    			LayoutInflater inflater = (LayoutInflater) mContext
+    		        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    			rowView = inflater.inflate(R.layout.list_item_match, parent, false);
+    			holder = new ViewHolder();
+    			holder.hometeam = (TextView) rowView.findViewById(R.id.hometeam);
+    			holder.awayteam = (TextView) rowView.findViewById(R.id.awayteam);
+    			rowView.setTag(holder);
+    		}
+    		if(holder==null) holder = (ViewHolder) rowView.getTag();
+    		holder.hometeam.setText(((Match)mList.get(position)).getHomeTeam());
+    		holder.awayteam.setText(((Match)mList.get(position)).getAwayTeam());	
+    		return rowView;
+    	}
+
+    	@Override
+    	public int getCount() {
+    		return mList.size();
+    	}
+
+    	@Override
+    	public Object getItem(int position) {
+    		return mList.get(position);
+    	}
+
+    	@Override
+    	public long getItemId(int position) {
+    		return mList.indexOf(getItem(position));
+    	}
+    	
+    	class ViewHolder{
+    		public TextView hometeam;
+    		public TextView awayteam;
+    	}
+    }
+
 }
+

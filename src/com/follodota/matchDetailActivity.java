@@ -30,16 +30,12 @@ public class matchDetailActivity extends FragmentActivity {
         // (e.g. when rotating the screen from portrait to landscape).
         // In this case, the fragment will automatically be re-added
         // to its container so we don't need to manually add it.
-        // For more information, see the Fragments API guide at:
-        //
-        // http://developer.android.com/guide/components/fragments.html
-        //
         if (savedInstanceState == null) {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(matchDetailFragment.ARG_ITEM_ID,
-                    getIntent().getStringExtra(matchDetailFragment.ARG_ITEM_ID));
+            arguments.putSerializable(matchDetailFragment.SELECTED_MATCH,
+                    getIntent().getSerializableExtra(matchDetailFragment.SELECTED_MATCH));
             //TODO: @thearith instantiate the fragment (which u implemented,) here:
             matchDetailFragment fragment = new matchDetailFragment();
             fragment.setArguments(arguments);

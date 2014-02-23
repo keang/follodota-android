@@ -2,12 +2,11 @@ package com.follodota;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-
-import com.follodota.dummy.DummyContent;
+import com.follodota.models.Match;
 
 /**
  * A fragment representing a single match detail screen.
@@ -17,15 +16,12 @@ import com.follodota.dummy.DummyContent;
  */
 public class matchDetailFragment extends Fragment {
     /**
-     * The fragment argument representing the item ID that this fragment
+     * The fragment argument representing the match that this fragment
      * represents.
      */
-    public static final String ARG_ITEM_ID = "item_id";
+    public static final String SELECTED_MATCH = "follodota.match";
 
-    /**
-     * The dummy content this fragment is presenting.
-     */
-    private DummyContent.DummyItem mItem;
+    private Match mMatch;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -37,12 +33,9 @@ public class matchDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
-            // Load the dummy content specified by the fragment
-            // arguments. In a real-world scenario, use a Loader
-            // to load content from a content provider.
-            mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
+        if (getArguments().containsKey(SELECTED_MATCH)) {
+            mMatch = (Match) getArguments().getSerializable(SELECTED_MATCH);
+            Log.d("detail fragment", mMatch.toString());
         }
     }
 
@@ -51,10 +44,7 @@ public class matchDetailFragment extends Fragment {
             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_match_detail, container, false);
 
-        // Show the dummy content as text in a TextView.
-        if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.match_detail)).setText(mItem.content);
-        }
+        //TODO: implement view to represent mMatch here
 
         return rootView;
     }
