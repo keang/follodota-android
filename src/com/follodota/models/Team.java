@@ -26,6 +26,10 @@ public class Team extends SerializableJSONBasedObject{
 		        ctx.getPackageName());
 		return id;
 	}
+
+	public String getName() {
+		return getString("name");
+	}
 }
 
 

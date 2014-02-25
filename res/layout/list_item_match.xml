@@ -3,26 +3,66 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal" 
+    android:padding="10dp"
     android:gravity="center">
 
-    <ImageView
-        android:id="@+id/hometeam"
+	    <ImageView
+	        android:id="@+id/hometeam"
+	        android:layout_width="@dimen/team_logo_size"
+	        android:layout_height="@dimen/team_logo_size"
+	        android:src="@drawable/logo"
+	        android:background="@drawable/team_logo_box2"
+	        android:padding="3dp"
+	        android:contentDescription="@string/hometeam_logo_description" 
+	        />
+	
+	    <com.follodota.utils.TypefaceTextView
+	        android:id="@+id/vs"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text=" vs " />
+	
+	    <ImageView
+	        android:id="@+id/awayteam"
+	        android:layout_width="@dimen/team_logo_size"
+	        android:layout_height="@dimen/team_logo_size"
+	        android:contentDescription="@string/awayteam_logo_description"
+	        android:background="@drawable/team_logo_box1"
+	        android:padding="3dp"
+	        android:src="@drawable/logo" />
+	    
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_launcher"
-        android:contentDescription="@string/hometeam_logo_description" />
+        android:layout_marginLeft="20dp"
+        android:gravity="left"
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:paddingLeft="50dp" >
 
-    <TextView
-        android:id="@+id/vs"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=" vs " />
+    	<com.follodota.utils.TypefaceTextView
+	        android:id="@+id/caster"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="Valve" />
+    	<com.follodota.utils.TypefaceTextView
+	        android:id="@+id/date"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:textSize="@dimen/tiny"
+	        android:text="Yesterday" />
+    	<com.follodota.utils.TypefaceTextView
+	        android:id="@+id/round"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:textSize="@dimen/tiny"
+	        android:text="B06" />
+	    <com.follodota.utils.TypefaceTextView
+	        android:id="@+id/league_name"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="The International" />
+    </LinearLayout>
 
-    <ImageView
-        android:id="@+id/awayteam"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/awayteam_logo_description"
-        android:src="@drawable/ic_launcher" />
 
 </LinearLayout>

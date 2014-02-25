@@ -105,7 +105,7 @@ public class matchListFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
-        ((matchListActivity)getActivity())
+        ((MainActivity)getActivity())
         	.onMatchSelected((Match) listView.getItemAtPosition(position));
     }
 
@@ -141,6 +141,8 @@ public class matchListFragment extends ListFragment {
     }
     
 
+    
+
     private class MatchesListAdapter extends BaseAdapter{
     	private final Context mContext;
     	private final List<Match> mList;
@@ -161,11 +163,19 @@ public class matchListFragment extends ListFragment {
     			holder = new ViewHolder();
     			holder.hometeam = (ImageView) rowView.findViewById(R.id.hometeam);
     			holder.awayteam = (ImageView) rowView.findViewById(R.id.awayteam);
+    			holder.date = (TextView)rowView.findViewById(R.id.date);
+    			holder.round = (TextView) rowView.findViewById(R.id.round);
+    			holder.leagueName = (TextView) rowView.findViewById(R.id.league_name);
+    			holder.caster = (TextView) rowView.findViewById(R.id.caster);
     			rowView.setTag(holder);
     		}
     		if(holder==null) holder = (ViewHolder) rowView.getTag();
-    		holder.hometeam.setImageResource(((Match)mList.get(position)).getHomeTeam().getLogoResourceId(mContext));
-    		holder.awayteam.setImageResource(((Match)mList.get(position)).getAwayTeam().getLogoResourceId(mContext));
+    		Match curMatch = (Match)mList.get(position);
+    		holder.hometeam.setImageResource(curMatch.getHomeTeam().getLogoResourceId(mContext));
+    		holder.awayteam.setImageResource(curMatch.getAwayTeam().getLogoResourceId(mContext));
+    		holder.date.setText(curMatch.getPlayedDate());
+    		holder.caster.setText(curMatch.getCaster());
+    		holder.leagueName.setText(curMatch.getLeagueName());
     		return rowView;
     	}
 
@@ -187,6 +197,10 @@ public class matchListFragment extends ListFragment {
     	class ViewHolder{
     		public ImageView hometeam;
     		public ImageView awayteam;
+    		public TextView date;
+    		public TextView leagueName;
+    		public TextView round;
+    		public TextView caster;
     	}
     }
 

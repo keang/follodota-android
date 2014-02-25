@@ -5,5 +5,8 @@
     <string name="title_match_detail">match Detail</string>
     <string name="awayteam_logo_description">Away Team Logo</string>
     <string name="hometeam_logo_description">Home Team Logo</string>
-
+	
+    <string name="nav_title_league">Leagues</string>
+    <string name="nav_title_matches">Matches</string>
+    <string name="error_player">There was an error initializing the YouTubePlayer.</string>
 </resources>

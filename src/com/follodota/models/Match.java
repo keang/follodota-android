@@ -1,6 +1,10 @@
 package com.follodota.models;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,5 +43,35 @@ public class Match extends SerializableJSONBasedObject{
 		return "follodota.match";
 	}
 	
+    @Override
+    public String toString(){
+    	return getHomeTeam().getName() + " vs " + getAwayTeam().getName();
+    }
+
+	public String getLeagueName() {
+		return (new League(getJSONObject("league")).getName());
+	}
+
+	public String getRound() {
+		return null;
+	}
+
+	public String getPlayedDate() {
+		//2013-08-11T00:00:00.000Z
+	    SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+	        Locale.getDefault());
+	    SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy",
+	    		Locale.getDefault());
+	    try {
+	      return dateFormat.format(parser.parse(getAllGames().get(0).getString("played_at")));
+	    } catch (ParseException e) {
+	      Log.v(getTag(), "Can't parse date format", e);
+	    }
+		return null;
+	}
+
+	public String getCaster() {
+		return getAllGames().get(0).getString("caster");
+	}
 
 }

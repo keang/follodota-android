@@ -64,8 +64,8 @@ public class matchListActivity extends FragmentActivity{
 		} else {
 			// In single-pane mode, simply start the detail activity
 			// for the selected item ID.
-			Intent detailIntent = new Intent(this, matchDetailActivity.class);
-			detailIntent.putExtra(matchDetailFragment.SELECTED_MATCH, match);
+			Intent detailIntent = new Intent(this, MatchVideoActivity.class);
+			detailIntent.putExtra(MatchVideoActivity.SELECTED_MATCH, match);
 			startActivity(detailIntent);
 		}
 	}
