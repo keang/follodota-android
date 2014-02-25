@@ -31,7 +31,7 @@
                 android:value=".matchListActivity" />
         </activity>
         <activity 
-            android:name="com.follodota.MatchVideoActivity">
+            android:name="com.follodota.MatchDetailActivity">
         </activity>
     </application>
 

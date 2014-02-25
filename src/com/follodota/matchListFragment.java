@@ -32,7 +32,7 @@ import com.follodota.utils.FolloDotaRequest;
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
-public class matchListFragment extends ListFragment {
+public class MatchListFragment extends ListFragment {
 	private static final String TAG = "follodota.listfragment";
 	private static final String matchesIndexApi = "http://follodota.herokuapp.com/api/v1/matches.json";
     /**
@@ -51,7 +51,7 @@ public class matchListFragment extends ListFragment {
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public matchListFragment() {
+    public MatchListFragment() {
     }
 
     @Override
@@ -72,9 +72,9 @@ public class matchListFragment extends ListFragment {
 					}
 					if (m!=null)matchesList.add(m);
 				}
-				MatchesListAdapter mAdapter = new MatchesListAdapter(matchListFragment.this.getActivity()
+				MatchesListAdapter mAdapter = new MatchesListAdapter(MatchListFragment.this.getActivity()
 						, matchesList);
-				matchListFragment.this.setListAdapter(mAdapter);
+				MatchListFragment.this.setListAdapter(mAdapter);
 			}
 		}, null);
 		//calling the api!

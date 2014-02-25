@@ -1,64 +1,164 @@
+/*
+ * Copyright 2012 Google Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.follodota;
 
-import android.content.Intent;
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
+import com.follodota.models.Game;
+import com.follodota.models.Match;
+import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubePlayerView;
+
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.NavUtils;
-import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.ListView;
+import android.widget.TextView;
 
-/**
- * An activity representing a single match detail screen. This
- * activity is only used on handset devices. On tablet-size devices,
- * item details are presented side-by-side with a list of items
- * in a {@link matchListActivity}.
- * <p>
- * This activity is mostly just a 'shell' activity containing nothing
- * more than a {@link matchDetailFragment}.
- */
-public class matchDetailActivity extends FragmentActivity {
+public class MatchDetailActivity extends YouTubeFailureRecoveryActivity implements
+    YouTubePlayer.OnFullscreenListener {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_match_detail);
+  public static final String SELECTED_MATCH="follodota.selected_match";
+  private static final int PORTRAIT_ORIENTATION = Build.VERSION.SDK_INT < 9
+      ? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+      : ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
 
-        // Show the Up button in the action bar.
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+  private Match mMatch;
+  private YouTubePlayerView playerView;
+  private YouTubePlayer player;
+  private Button fullscreenButton;
+  private CompoundButton checkbox;
+  private View otherViews;
+  private ListView listView;
+  private boolean fullscreen;
 
-        // savedInstanceState is non-null when there is fragment state
-        // saved from previous configurations of this activity
-        // (e.g. when rotating the screen from portrait to landscape).
-        // In this case, the fragment will automatically be re-added
-        // to its container so we don't need to manually add it.
-        if (savedInstanceState == null) {
-            // Create the detail fragment and add it to the activity
-            // using a fragment transaction.
-            Bundle arguments = new Bundle();
-            arguments.putSerializable(matchDetailFragment.SELECTED_MATCH,
-                    getIntent().getSerializableExtra(matchDetailFragment.SELECTED_MATCH));
-            //TODO: @thearith instantiate the fragment (which u implemented,) here:
-            matchDetailFragment fragment = new matchDetailFragment();
-            fragment.setArguments(arguments);
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.match_detail_container, fragment)
-                    .commit();
-        }
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    setContentView(R.layout.activity_video);
+    playerView = (YouTubePlayerView) findViewById(R.id.player);
+    otherViews = findViewById(R.id.other_views);
+    listView = (ListView) findViewById(R.id.game_list_view);
+    mMatch = (Match) getIntent().getSerializableExtra(SELECTED_MATCH);
+    ArrayAdapter<Game> gameAdapter = new ArrayAdapter<Game>(this, R.layout.list_item_game
+    		, R.id.game_number, mMatch.getAllGames());
+    listView.setAdapter(gameAdapter);
+    listView.setOnItemClickListener(new OnItemClickListener() {
+
+		@Override
+		public void onItemClick(AdapterView<?> arg0, View view, int pos,
+				long id) {
+			player.cueVideo(mMatch.getAllGames().get(pos).getYoutubeLink());
+		}
+
+	});
+    listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+    listView.setItemChecked(0, true);
+    
+    TextView title = (TextView) findViewById(R.id.match_title);
+    title.setText(mMatch.toString());
+    
+    TextView roundText = (TextView)findViewById(R.id.round);
+    roundText.setText(mMatch.getRound());
+    
+    TextView leagueNameText = (TextView)findViewById(R.id.league_name);
+    leagueNameText.setText(mMatch.getLeagueName());
+    playerView.initialize("AIzaSyCQ9pDHYz_bxjj4yQeHAK3G0P-WKA1GQfk", this);
+
+    doLayout();
+  }
+
+  @Override
+  public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer player,
+      boolean wasRestored) {
+    this.player = player;
+    //setControlsEnabled();
+    //player.setFullscreen(!fullscreen);
+    // Specify that we want to handle fullscreen behavior ourselves.
+    player.addFullscreenControlFlag(YouTubePlayer.FULLSCREEN_FLAG_CUSTOM_LAYOUT);
+    player.setOnFullscreenListener(this);
+    if (!wasRestored) {
+        Match mMatch = (Match)getIntent().getExtras().getSerializable(SELECTED_MATCH);
+        player.cueVideo(mMatch.getAllGames().get(0).getYoutubeLink());
     }
+  }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // This ID represents the Home or Up button. In the case of this
-                // activity, the Up button is shown. Use NavUtils to allow users
-                // to navigate up one level in the application structure. For
-                // more details, see the Navigation pattern on Android Design:
-                //
-                // http://developer.android.com/design/patterns/navigation.html#up-vs-back
-                //
-                NavUtils.navigateUpTo(this, new Intent(this, matchListActivity.class));
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
+  @Override
+  protected YouTubePlayer.Provider getYouTubePlayerProvider() {
+    return playerView;
+  }
+
+  private void doLayout() {
+    LinearLayout.LayoutParams playerParams =
+        (LinearLayout.LayoutParams) playerView.getLayoutParams();
+    if (fullscreen) {
+      // When in fullscreen, the visibility of all other views than the player should be set to
+      // GONE and the player should be laid out across the whole screen.
+    	//TODO: add sharing overlay here
+      playerParams.width = LayoutParams.MATCH_PARENT;
+      playerParams.height = LayoutParams.MATCH_PARENT;
+
+      otherViews.setVisibility(View.GONE);
+    } else {
+      // This layout is up to you - this is just a simple example (vertically stacked boxes in
+      // portrait, horizontally stacked in landscape).
+      otherViews.setVisibility(View.VISIBLE);
+      ViewGroup.LayoutParams otherViewsParams = otherViews.getLayoutParams();
+      if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+    	  //player.setFullscreen(true);
+      } else {
+        playerParams.width = otherViewsParams.width = MATCH_PARENT;
+        playerParams.height = WRAP_CONTENT;
+        playerParams.weight = 0;
+        otherViewsParams.height = 0;
+        //baseLayout.setOrientation(LinearLayout.VERTICAL);
+      }
+     // setControlsEnabled();
     }
+  }
+
+  private void setControlsEnabled() {
+    checkbox.setEnabled(player != null
+        && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT);
+    fullscreenButton.setEnabled(player != null);
+  }
+
+  @Override
+  public void onFullscreen(boolean isFullscreen) {
+    fullscreen = isFullscreen;
+    doLayout();
+  }
+
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    doLayout();
+  }
+
 }

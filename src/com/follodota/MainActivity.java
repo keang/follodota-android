@@ -26,8 +26,8 @@ public class MainActivity extends FragmentActivity implements
 		@Override
 		public boolean onNavigationItemSelected(int itemPosition, long itemId) {
 			Fragment fragment = null;
-			if(itemPosition==1) fragment = new matchListFragment();
-			else if(itemPosition==0) fragment = new matchListFragment();
+			if(itemPosition==1) fragment = new MatchListFragment();
+			else if(itemPosition==0) fragment = new MatchListFragment();
 			getSupportFragmentManager().beginTransaction()
 				.replace(R.id.container, fragment).commit();
 			return true;
@@ -89,8 +89,8 @@ public class MainActivity extends FragmentActivity implements
 		}
 
 		public void onMatchSelected(Match itemAtPosition) {
-			Intent detailIntent = new Intent(this, MatchVideoActivity.class);
-			detailIntent.putExtra(MatchVideoActivity.SELECTED_MATCH, itemAtPosition);
+			Intent detailIntent = new Intent(this, MatchDetailActivity.class);
+			detailIntent.putExtra(MatchDetailActivity.SELECTED_MATCH, itemAtPosition);
 			startActivity(detailIntent);
 		}
 }
