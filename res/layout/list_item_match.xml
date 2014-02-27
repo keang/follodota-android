@@ -41,7 +41,7 @@
         android:paddingLeft="50dp" >
 
     	<com.follodota.utils.TypefaceTextView
-	        android:id="@+id/caster"
+	        android:id="@+id/round"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:text="Valve" />
@@ -52,7 +52,7 @@
 	        android:textSize="@dimen/tiny"
 	        android:text="Yesterday" />
     	<com.follodota.utils.TypefaceTextView
-	        android:id="@+id/round"
+	        android:id="@+id/caster"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:textSize="@dimen/tiny"

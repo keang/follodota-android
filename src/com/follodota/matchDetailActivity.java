@@ -28,13 +28,12 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
@@ -51,8 +50,7 @@ public class MatchDetailActivity extends YouTubeFailureRecoveryActivity implemen
   private Match mMatch;
   private YouTubePlayerView playerView;
   private YouTubePlayer player;
-  private Button fullscreenButton;
-  private CompoundButton checkbox;
+  private LinearLayout baseLayout;
   private View otherViews;
   private ListView listView;
   private boolean fullscreen;
@@ -62,6 +60,7 @@ public class MatchDetailActivity extends YouTubeFailureRecoveryActivity implemen
     super.onCreate(savedInstanceState);
 
     setContentView(R.layout.activity_video);
+    baseLayout = (LinearLayout) findViewById(R.id.layout);
     playerView = (YouTubePlayerView) findViewById(R.id.player);
     otherViews = findViewById(R.id.other_views);
     listView = (ListView) findViewById(R.id.game_list_view);
@@ -74,7 +73,9 @@ public class MatchDetailActivity extends YouTubeFailureRecoveryActivity implemen
 		@Override
 		public void onItemClick(AdapterView<?> arg0, View view, int pos,
 				long id) {
-			player.cueVideo(mMatch.getAllGames().get(pos).getYoutubeLink());
+			Log.d("selected", mMatch.getAllGames().get(pos).getYoutubeLink());
+			player.loadVideo(mMatch.getAllGames().get(pos).getYoutubeLink());
+			listView.setSelection(pos);
 		}
 
 	});
@@ -99,7 +100,6 @@ public class MatchDetailActivity extends YouTubeFailureRecoveryActivity implemen
       boolean wasRestored) {
     this.player = player;
     //setControlsEnabled();
-    //player.setFullscreen(!fullscreen);
     // Specify that we want to handle fullscreen behavior ourselves.
     player.addFullscreenControlFlag(YouTubePlayer.FULLSCREEN_FLAG_CUSTOM_LAYOUT);
     player.setOnFullscreenListener(this);
@@ -131,22 +131,20 @@ public class MatchDetailActivity extends YouTubeFailureRecoveryActivity implemen
       otherViews.setVisibility(View.VISIBLE);
       ViewGroup.LayoutParams otherViewsParams = otherViews.getLayoutParams();
       if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-    	  //player.setFullscreen(true);
+    	  playerParams.width = otherViewsParams.width = 0;
+        playerParams.height = WRAP_CONTENT;
+        otherViewsParams.height = MATCH_PARENT;
+        playerParams.weight = 1;
+        baseLayout.setOrientation(LinearLayout.HORIZONTAL);
       } else {
         playerParams.width = otherViewsParams.width = MATCH_PARENT;
         playerParams.height = WRAP_CONTENT;
         playerParams.weight = 0;
         otherViewsParams.height = 0;
-        //baseLayout.setOrientation(LinearLayout.VERTICAL);
+        baseLayout.setOrientation(LinearLayout.VERTICAL);
       }
      // setControlsEnabled();
     }
-  }
-
-  private void setControlsEnabled() {
-    checkbox.setEnabled(player != null
-        && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT);
-    fullscreenButton.setEnabled(player != null);
   }
 
   @Override

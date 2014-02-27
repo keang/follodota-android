@@ -26,19 +26,7 @@ public class Game extends SerializableJSONBasedObject{
 	 * @return the Youtube id of the link
 	 */
 	public String getYoutubeLink(){
-		String url = getString("youtube_link");
-		String[] params = url.split("[&,?]");
-		for (String param : params){
-			try {
-				String name = param.split("=")[0];
-				String value = param.split("=")[1];
-				if(name.equalsIgnoreCase("v"))
-					return value;
-			} catch(Exception e){
-				Log.e(getTag(), e.getMessage());
-			}
-		}
-		return null;
+		return getString("youtube_link");
 	}
 	@Override
 	String getTag() {

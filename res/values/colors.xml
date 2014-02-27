@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="game_number_text">#4B7C62</color>
+    <color name="selected_list_text">#4B7C62</color>
+    <color name="default_list_text">#ffffff</color>
+</resources>

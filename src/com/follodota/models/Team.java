@@ -2,10 +2,13 @@ package com.follodota.models;
 
 import org.json.JSONObject;
 
+import com.follodota.R;
+
 import android.content.Context;
 
 public class Team extends SerializableJSONBasedObject{
 	private static final long serialVersionUID = 2705498849640071860L;
+	public static final int default_team_logo = R.drawable.logo9_15;
 
 	public Team(JSONObject o) {
 		super(o);

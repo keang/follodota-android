@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -19,7 +21,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.volley.Response.Listener;
-import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.follodota.models.Match;
 import com.follodota.utils.FolloDotaRequest;
 
@@ -57,16 +59,20 @@ public class MatchListFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-		JsonArrayRequest listRequest = new JsonArrayRequest(matchesIndexApi, new Listener<JSONArray>() {
-
-			@Override
-			public void onResponse(JSONArray response) {
+        Listener<JSONObject> matchesListener = new Listener<JSONObject>() {
+        	@Override
+			public void onResponse(JSONObject responseObject) {
 				ArrayList<Match> matchesList = new ArrayList<Match>();
-				for(int i=0; i<response.length(); i++){
+				JSONArray JSONmatchList = null;
+				try{
+					JSONmatchList = responseObject.getJSONArray("matches");
+				} catch( JSONException e){
+					Log.e(TAG, e.getMessage());
+				}
+				for(int i=0; i<JSONmatchList.length(); i++){
 					Match m=null;
 					try {
-						m = new Match(response.getJSONObject(i));
+						m = new Match(JSONmatchList.getJSONObject(i));
 					} catch (JSONException e) {
 						Log.e(TAG, e.getMessage());
 					}
@@ -76,8 +82,11 @@ public class MatchListFragment extends ListFragment {
 						, matchesList);
 				MatchListFragment.this.setListAdapter(mAdapter);
 			}
-		}, null);
+        };
+        
+		JsonObjectRequest listRequest = new JsonObjectRequest(matchesIndexApi, null, matchesListener, null);
 		//calling the api!
+		Log.d(TAG,"starting request");
 		FolloDotaRequest.getInstance(getActivity()).addRequest(listRequest);
     }
 
@@ -171,9 +180,10 @@ public class MatchListFragment extends ListFragment {
     		}
     		if(holder==null) holder = (ViewHolder) rowView.getTag();
     		Match curMatch = (Match)mList.get(position);
-    		holder.hometeam.setImageResource(curMatch.getHomeTeam().getLogoResourceId(mContext));
-    		holder.awayteam.setImageResource(curMatch.getAwayTeam().getLogoResourceId(mContext));
+    		holder.hometeam.setImageResource(curMatch.getHomeTeamLogo(mContext));
+    		holder.awayteam.setImageResource(curMatch.getAwayTeamLogo(mContext));
     		holder.date.setText(curMatch.getPlayedDate());
+    		holder.round.setText(curMatch.getRound());
     		holder.caster.setText(curMatch.getCaster());
     		holder.leagueName.setText(curMatch.getLeagueName());
     		return rowView;
