@@ -3,4 +3,5 @@
     <color name="game_number_text">#4B7C62</color>
     <color name="selected_list_text">#4B7C62</color>
     <color name="default_list_text">#ffffff</color>
+    <color name="unhighlight">#666666</color>
 </resources>

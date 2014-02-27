@@ -8,5 +8,6 @@
 	
     <string name="nav_title_league">Leagues</string>
     <string name="nav_title_matches">Matches</string>
+    <string name="nav_title_teams">Teams</string>
     <string name="error_player">There was an error initializing the YouTubePlayer.</string>
 </resources>

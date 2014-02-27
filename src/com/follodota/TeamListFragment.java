@@ -7,6 +7,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.android.volley.Response.Listener;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.follodota.models.Team;
+import com.follodota.utils.FolloDotaRequest;
+
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -20,24 +25,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.android.volley.Response.Listener;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.follodota.models.Match;
-import com.follodota.utils.FolloDotaRequest;
-import com.follodota.utils.MatchesListAdapter;
-
-/**
- * A list fragment representing a list of matches. This fragment
- * also supports tablet devices by allowing list items to be given an
- * 'activated' state upon selection. This helps indicate which item is
- * currently being viewed in a {@link matchDetailFragment}.
- * <p>
- * Activities containing this fragment MUST implement the {@link Callbacks}
- * interface.
- */
-public class MatchListFragment extends ListFragment {
-	private static final String TAG = "follodota.listfragment";
-	private static final String matchesIndexApi = "http://follodota.herokuapp.com/api/v1/matches.json";
+public class TeamListFragment extends ListFragment {
+	private static final String TAG = "follodota.teamlistfragment";
+	private static final String teamIndexApi = "http://follodota.herokuapp.com/api/v1/teams.json";
     /**
      * The serialization (saved instance state) Bundle key representing the
      * activated item position. Only used on tablets.
@@ -54,38 +44,38 @@ public class MatchListFragment extends ListFragment {
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public MatchListFragment() {
+    public TeamListFragment() {
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Listener<JSONObject> matchesListener = new Listener<JSONObject>() {
+        Listener<JSONObject> teamListener = new Listener<JSONObject>() {
         	@Override
 			public void onResponse(JSONObject responseObject) {
-				ArrayList<Match> matchesList = new ArrayList<Match>();
+				ArrayList<Team> teamList = new ArrayList<Team>();
 				JSONArray JSONmatchList = null;
 				try{
-					JSONmatchList = responseObject.getJSONArray("matches");
+					JSONmatchList = responseObject.getJSONArray("teams");
 				} catch( JSONException e){
 					Log.e(TAG, e.getMessage());
 				}
 				for(int i=0; i<JSONmatchList.length(); i++){
-					Match m=null;
+					Team t=null;
 					try {
-						m = new Match(JSONmatchList.getJSONObject(i));
+						t = new Team(JSONmatchList.getJSONObject(i));
 					} catch (JSONException e) {
 						Log.e(TAG, e.getMessage());
 					}
-					if (m!=null)matchesList.add(m);
+					if (t!=null)teamList.add(t);
 				}
-				MatchesListAdapter mAdapter = new MatchesListAdapter(MatchListFragment.this.getActivity()
-						, matchesList);
-				MatchListFragment.this.setListAdapter(mAdapter);
+				TeamListAdapter mAdapter = new TeamListAdapter(TeamListFragment.this.getActivity()
+						, teamList);
+				TeamListFragment.this.setListAdapter(mAdapter);
 			}
         };
         
-		JsonObjectRequest listRequest = new JsonObjectRequest(matchesIndexApi, null, matchesListener, null);
+		JsonObjectRequest listRequest = new JsonObjectRequest(teamIndexApi, null, teamListener, null);
 		//calling the api!
 		Log.d(TAG,"starting request");
 		FolloDotaRequest.getInstance(getActivity()).addRequest(listRequest);
@@ -116,7 +106,7 @@ public class MatchListFragment extends ListFragment {
     public void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
         ((MainActivity)getActivity())
-        	.onMatchSelected((Match) listView.getItemAtPosition(position));
+        	.onTeamSelected((Team) listView.getItemAtPosition(position));
     }
 
     @Override
@@ -149,6 +139,57 @@ public class MatchListFragment extends ListFragment {
 
         mActivatedPosition = position;
     }
+    
+
+    
+
+    private class TeamListAdapter extends BaseAdapter{
+    	private final Context mContext;
+    	private final List<Team> mList;
+    	public TeamListAdapter(Context context,List<Team> objects) {
+    		super();
+    		mContext = context;
+    		mList = objects;
+    	}
+
+    	@Override
+    	public View getView(int position, View convertView, ViewGroup parent) {
+    		View rowView = convertView;
+    		ViewHolder holder = null;
+    		if(rowView ==null){
+    			LayoutInflater inflater = (LayoutInflater) mContext
+    		        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    			rowView = inflater.inflate(R.layout.list_item_team, parent, false);
+    			holder = new ViewHolder();
+    			holder.icon = (ImageView) rowView.findViewById(R.id.icon);
+    			holder.name = (TextView)rowView.findViewById(R.id.name);
+    			rowView.setTag(holder);
+    		}
+    		if(holder==null) holder = (ViewHolder) rowView.getTag();
+    		Team curTeam = (Team)mList.get(position);
+    		holder.icon.setImageResource(curTeam.getLogoResourceId(mContext));
+    		holder.name.setText(curTeam.getName());
+    		return rowView;
+    	}
+
+    	@Override
+    	public int getCount() {
+    		return mList.size();
+    	}
+
+    	@Override
+    	public Object getItem(int position) {
+    		return mList.get(position);
+    	}
+
+    	@Override
+    	public long getItemId(int position) {
+    		return mList.indexOf(getItem(position));
+    	}
+    	
+    	class ViewHolder{
+    		public ImageView icon;
+    		public TextView name;
+    	}
+    }
 }
-
-

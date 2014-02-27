@@ -2,6 +2,7 @@ package com.follodota;
 
 import com.follodota.R;
 import com.follodota.models.Match;
+import com.follodota.models.Team;
 
 import android.annotation.TargetApi;
 import android.app.ActionBar;
@@ -26,7 +27,7 @@ public class MainActivity extends FragmentActivity implements
 		@Override
 		public boolean onNavigationItemSelected(int itemPosition, long itemId) {
 			Fragment fragment = null;
-			if(itemPosition==1) fragment = new MatchListFragment();
+			if(itemPosition==1) fragment = new TeamListFragment();
 			else if(itemPosition==0) fragment = new MatchListFragment();
 			getSupportFragmentManager().beginTransaction()
 				.replace(R.id.container, fragment).commit();
@@ -48,7 +49,8 @@ public class MainActivity extends FragmentActivity implements
 							android.R.layout.simple_list_item_1,
 							android.R.id.text1, new String[] {
 									//getString(R.string.nav_title_league),
-									getString(R.string.nav_title_matches)
+									getString(R.string.nav_title_matches),
+									getString(R.string.nav_title_teams)
 									}), this);
 		}
 		
@@ -91,6 +93,12 @@ public class MainActivity extends FragmentActivity implements
 		public void onMatchSelected(Match itemAtPosition) {
 			Intent detailIntent = new Intent(this, MatchDetailActivity.class);
 			detailIntent.putExtra(MatchDetailActivity.SELECTED_MATCH, itemAtPosition);
+			this.startActivity(detailIntent);
+		}
+
+		public void onTeamSelected(Team itemAtPosition) {
+			Intent detailIntent = new Intent(this, TeamDetailActivity.class);
+			detailIntent.putExtra(TeamDetailActivity.SELECTED_TEAM, itemAtPosition);
 			startActivity(detailIntent);
 		}
 }

@@ -49,12 +49,14 @@
 	        android:id="@+id/date"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
+	        android:textColor="@color/unhighlight"
 	        android:textSize="@dimen/tiny"
 	        android:text="Yesterday" />
     	<com.follodota.utils.TypefaceTextView
 	        android:id="@+id/caster"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
+	        android:textColor="@color/unhighlight"
 	        android:textSize="@dimen/tiny"
 	        android:text="B06" />
 	    <com.follodota.utils.TypefaceTextView

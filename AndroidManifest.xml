@@ -34,7 +34,9 @@
         <activity 
             android:name="com.follodota.MatchDetailActivity"
             android:screenOrientation="landscape">
-            
+        </activity>
+        <activity 
+            android:name="com.follodota.TeamDetailActivity">
         </activity>
     </application>
 

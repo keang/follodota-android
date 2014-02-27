@@ -42,6 +42,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
@@ -61,6 +62,7 @@ public class MatchDetailActivity extends YouTubeFailureRecoveryActivity implemen
   private LinearLayout baseLayout;
   private View otherViews;
   private ListView listView;
+  private Button infoButton;
   private boolean fullscreen;
   private boolean isInfoVisible;
 
@@ -73,6 +75,22 @@ public class MatchDetailActivity extends YouTubeFailureRecoveryActivity implemen
     playerView = (YouTubePlayerView) findViewById(R.id.player);
     otherViews = findViewById(R.id.other_views);
     listView = (ListView) findViewById(R.id.game_list_view);
+    infoButton = (Button) findViewById(R.id.info_button);
+    infoButton.setOnClickListener(new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			toggle(otherViews, 0);
+		}
+	});
+    findViewById(R.id.close_info_button).setOnClickListener(new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			toggle(otherViews, 0);
+			if(!player.isPlaying()) player.play();
+		}
+	});
     mMatch = (Match) getIntent().getSerializableExtra(SELECTED_MATCH);
     ArrayAdapter<Game> gameAdapter = new ArrayAdapter<Game>(this, R.layout.list_item_game
     		, R.id.game_number, mMatch.getAllGames());
@@ -176,8 +194,10 @@ public class MatchDetailActivity extends YouTubeFailureRecoveryActivity implemen
 	    animation.setAnimationListener(new AnimationListener() {
 	        @Override
 	        public void onAnimationStart(Animation animation) {
-	        	if (animationResourceID==R.anim.translate_in_left)
+	        	if (animationResourceID==R.anim.translate_in_left){
 	        		v.setVisibility(View.VISIBLE);
+	        		infoButton.setVisibility(View.GONE);
+	        	}
 	        }
 
 	        @Override
@@ -185,8 +205,10 @@ public class MatchDetailActivity extends YouTubeFailureRecoveryActivity implemen
 
 	        @Override
 	        public void onAnimationEnd(Animation animation) {
-	        	if (animationResourceID==R.anim.translate_out_left)
+	        	if (animationResourceID==R.anim.translate_out_left){
 	        		v.setVisibility(View.GONE);
+	        		infoButton.setVisibility(View.VISIBLE);
+	        	}
 	        }
 	    });
 	    new Handler().postDelayed(new Runnable()
