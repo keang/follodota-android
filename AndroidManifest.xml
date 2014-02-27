@@ -25,13 +25,16 @@
         <activity
             android:name="com.follodota.matchDetailActivity"
             android:label="@string/title_match_detail"
+            android:screenOrientation="landscape"
             android:parentActivityName=".matchListActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".matchListActivity" />
         </activity>
         <activity 
-            android:name="com.follodota.MatchDetailActivity">
+            android:name="com.follodota.MatchDetailActivity"
+            android:screenOrientation="landscape">
+            
         </activity>
     </application>
 

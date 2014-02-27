@@ -58,7 +58,7 @@
 	        android:textSize="@dimen/tiny"
 	        android:text="B06" />
 	    <com.follodota.utils.TypefaceTextView
-	        android:id="@+id/league_name"
+	        android:id="@+id/league_name2"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:text="The International" />

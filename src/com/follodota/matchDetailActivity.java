@@ -19,6 +19,9 @@ package com.follodota;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import com.follodota.models.Game;
 import com.follodota.models.Match;
 import com.google.android.youtube.player.YouTubePlayer;
@@ -28,9 +31,14 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -54,13 +62,14 @@ public class MatchDetailActivity extends YouTubeFailureRecoveryActivity implemen
   private View otherViews;
   private ListView listView;
   private boolean fullscreen;
+  private boolean isInfoVisible;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
     setContentView(R.layout.activity_video);
-    baseLayout = (LinearLayout) findViewById(R.id.layout);
+    getActionBar().hide();
+    //baseLayout = (LinearLayout) findViewById(R.id.layout);
     playerView = (YouTubePlayerView) findViewById(R.id.player);
     otherViews = findViewById(R.id.other_views);
     listView = (ListView) findViewById(R.id.game_list_view);
@@ -88,11 +97,21 @@ public class MatchDetailActivity extends YouTubeFailureRecoveryActivity implemen
     TextView roundText = (TextView)findViewById(R.id.round);
     roundText.setText(mMatch.getRound());
     
-    TextView leagueNameText = (TextView)findViewById(R.id.league_name);
+    TextView leagueNameText = (TextView)findViewById(R.id.league_name1);
     leagueNameText.setText(mMatch.getLeagueName());
     playerView.initialize("AIzaSyCQ9pDHYz_bxjj4yQeHAK3G0P-WKA1GQfk", this);
-
-    doLayout();
+    playerView.setClickable(true);
+    playerView.setOnClickListener(new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			Log.d("playerview", "clicked");
+			toggle(otherViews, 0);
+		}
+	});
+    playerView.requestFocus();
+    toggle(otherViews, 5000);
+    //doLayout(); 
   }
 
   @Override
@@ -107,6 +126,7 @@ public class MatchDetailActivity extends YouTubeFailureRecoveryActivity implemen
         Match mMatch = (Match)getIntent().getExtras().getSerializable(SELECTED_MATCH);
         player.cueVideo(mMatch.getAllGames().get(0).getYoutubeLink());
     }
+    player.play();
   }
 
   @Override
@@ -147,16 +167,41 @@ public class MatchDetailActivity extends YouTubeFailureRecoveryActivity implemen
     }
   }
 
+  private void toggle(final View v, final int wait_duration){
+	  final int animationResourceID=v.getVisibility()==View.VISIBLE?
+			  R.anim.translate_out_left:R.anim.translate_in_left; 
+		  
+	  final Animation animation = AnimationUtils.loadAnimation(this, animationResourceID);
+	    animation.setDuration(200);
+	    animation.setAnimationListener(new AnimationListener() {
+	        @Override
+	        public void onAnimationStart(Animation animation) {
+	        	if (animationResourceID==R.anim.translate_in_left)
+	        		v.setVisibility(View.VISIBLE);
+	        }
+
+	        @Override
+	        public void onAnimationRepeat(Animation animation) {}
+
+	        @Override
+	        public void onAnimationEnd(Animation animation) {
+	        	if (animationResourceID==R.anim.translate_out_left)
+	        		v.setVisibility(View.GONE);
+	        }
+	    });
+	    new Handler().postDelayed(new Runnable()
+	    {
+	       @Override
+	       public void run()
+	       {
+	         v.startAnimation(animation);
+	       }
+	    }, wait_duration);
+  }
   @Override
   public void onFullscreen(boolean isFullscreen) {
     fullscreen = isFullscreen;
-    doLayout();
-  }
-
-  @Override
-  public void onConfigurationChanged(Configuration newConfig) {
-    super.onConfigurationChanged(newConfig);
-    doLayout();
+    //doLayout();
   }
 
 }
