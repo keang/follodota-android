@@ -34,7 +34,7 @@ public class MatchesListAdapter extends BaseAdapter{
 			holder.hometeam = (ImageView) rowView.findViewById(R.id.hometeam);
 			holder.awayteam = (ImageView) rowView.findViewById(R.id.awayteam);
 			holder.date = (TextView)rowView.findViewById(R.id.date);
-			holder.round = (TextView) rowView.findViewById(R.id.round);
+			holder.round = (TextView) rowView.findViewById(R.id.round_text);
 			holder.leagueName = (TextView) rowView.findViewById(R.id.league_name2);
 			holder.caster = (TextView) rowView.findViewById(R.id.caster);
 			rowView.setTag(holder);

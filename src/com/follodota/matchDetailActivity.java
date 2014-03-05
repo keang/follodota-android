@@ -36,6 +36,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
@@ -46,6 +47,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class MatchDetailActivity extends YouTubeFailureRecoveryActivity implements
@@ -60,10 +62,11 @@ public class MatchDetailActivity extends YouTubeFailureRecoveryActivity implemen
   private YouTubePlayerView playerView;
   private YouTubePlayer player;
   private LinearLayout baseLayout;
-  private View otherViews;
+  private View title;
+  private View round;
+  private View league;
   private ListView listView;
   private boolean fullscreen;
-  private boolean isInfoVisible;
 protected boolean clickedOnce;
 
   @Override
@@ -73,16 +76,10 @@ protected boolean clickedOnce;
     getActionBar().hide();
     //baseLayout = (LinearLayout) findViewById(R.id.layout);
     playerView = (YouTubePlayerView) findViewById(R.id.player);
-    otherViews = findViewById(R.id.other_views);
+    title = findViewById(R.id.match_title);
+    round = findViewById(R.id.round);
+    league = findViewById(R.id.league_name1);
     listView = (ListView) findViewById(R.id.game_list_view);
-    findViewById(R.id.close_info_button).setOnClickListener(new OnClickListener() {
-		
-		@Override
-		public void onClick(View v) {
-			toggle(otherViews, playerView, 0);
-			if(!player.isPlaying()) player.play();
-		}
-	});
     mMatch = (Match) getIntent().getSerializableExtra(SELECTED_MATCH);
     ArrayAdapter<Game> gameAdapter = new ArrayAdapter<Game>(this, R.layout.list_item_game
     		, R.id.game_number, mMatch.getAllGames());
@@ -110,18 +107,9 @@ protected boolean clickedOnce;
     TextView leagueNameText = (TextView)findViewById(R.id.league_name1);
     leagueNameText.setText(mMatch.getLeagueName());
     playerView.initialize("AIzaSyCQ9pDHYz_bxjj4yQeHAK3G0P-WKA1GQfk", this);
-    playerView.setClickable(true);
-    playerView.setOnClickListener(new OnClickListener() {
-		
-		@Override
-		public void onClick(View v) {
-			Log.d("playerview", "clicked");
-				toggle(otherViews, playerView, 0);
-				clickedOnce=false;
-			}
-	});
+
     playerView.requestFocus();
-    toggle(otherViews, playerView, 4000);
+    //toggle(otherViews, playerView, 4000);
     //doLayout(); 
   }
 
@@ -145,87 +133,44 @@ protected boolean clickedOnce;
     return playerView;
   }
 
-  private void doLayout() {
-    LinearLayout.LayoutParams playerParams =
-        (LinearLayout.LayoutParams) playerView.getLayoutParams();
-    if (fullscreen) {
+  private void doLayout(boolean mfullscreen) {
+	RelativeLayout.LayoutParams playerParams =
+        (RelativeLayout.LayoutParams) playerView.getLayoutParams();
+    if (mfullscreen) {
       // When in fullscreen, the visibility of all other views than the player should be set to
       // GONE and the player should be laid out across the whole screen.
-    	//TODO: add sharing overlay here
-      playerParams.width = LayoutParams.MATCH_PARENT;
-      playerParams.height = LayoutParams.MATCH_PARENT;
+    	//TODO: add sharing overlay here.
 
-      otherViews.setVisibility(View.GONE);
+      getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    	//getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN); // hide status bar
+      playerParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
+      playerParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
+      toggleOtherViews(mfullscreen);
     } else {
+      getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
       // This layout is up to you - this is just a simple example (vertically stacked boxes in
       // portrait, horizontally stacked in landscape).
-      otherViews.setVisibility(View.VISIBLE);
-      ViewGroup.LayoutParams otherViewsParams = otherViews.getLayoutParams();
-      if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-    	  playerParams.width = otherViewsParams.width = 0;
-        playerParams.height = WRAP_CONTENT;
-        otherViewsParams.height = MATCH_PARENT;
-        playerParams.weight = 1;
-        baseLayout.setOrientation(LinearLayout.HORIZONTAL);
-      } else {
-        playerParams.width = otherViewsParams.width = MATCH_PARENT;
-        playerParams.height = WRAP_CONTENT;
-        playerParams.weight = 0;
-        otherViewsParams.height = 0;
-        baseLayout.setOrientation(LinearLayout.VERTICAL);
-      }
+      toggleOtherViews(mfullscreen);
+      playerParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
+      playerParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
+      playerParams.addRule(RelativeLayout.BELOW, R.id.match_title);
+      playerParams.addRule(RelativeLayout.RIGHT_OF, R.id.league_name1);
      // setControlsEnabled();
     }
   }
 
-  private void toggle(final View infoPanel, final View videoPanel, final int wait_duration){
-	  final int videoPanelAnimationResourceID;
-	  final int infoPanelAnimationResourceID;
-	  if(infoPanel.getVisibility()==View.VISIBLE){
-		  infoPanelAnimationResourceID=R.anim.translate_out_left;
-		  videoPanelAnimationResourceID=R.anim.zoom_in;
-	  }else {
-		  infoPanelAnimationResourceID = R.anim.translate_in_left;
-		  videoPanelAnimationResourceID = R.anim.zoom_out;
-	  }
-	  
-	  final Animation videoPanelAnimation = AnimationUtils.loadAnimation(this, videoPanelAnimationResourceID);
-	  final Animation infoPanelAnimation = AnimationUtils.loadAnimation(this, infoPanelAnimationResourceID);
-	    infoPanelAnimation.setDuration(200);
-	    infoPanelAnimation.setAnimationListener(new AnimationListener() {
-	        @Override
-	        public void onAnimationStart(Animation animation) {
-	        	if (infoPanelAnimationResourceID==R.anim.translate_in_left){
-	        		infoPanel.setVisibility(View.VISIBLE);
-	        	}
-	        }
-
-	        @Override
-	        public void onAnimationRepeat(Animation animation) {}
-
-	        @Override
-	        public void onAnimationEnd(Animation animation) {
-	        	if (infoPanelAnimationResourceID==R.anim.translate_out_left){
-	        		infoPanel.setVisibility(View.GONE);
-	        		player.play();
-	        	}
-	        }
-	    });
-	    
-	    new Handler().postDelayed(new Runnable()
-	    {
-	       @Override
-	       public void run()
-	       {
-	    	 videoPanel.startAnimation(videoPanelAnimation);
-	         infoPanel.startAnimation(infoPanelAnimation);
-	       }
-	    }, wait_duration);
+  private void toggleOtherViews(boolean fullscreen) {
+	int visibility = fullscreen? View.GONE: View.VISIBLE;
+	title.setVisibility(visibility);
+	round.setVisibility(visibility);
+	league.setVisibility(visibility);
+	listView.setVisibility(visibility);
   }
+
   @Override
   public void onFullscreen(boolean isFullscreen) {
     fullscreen = isFullscreen;
-    //doLayout();
+    doLayout(isFullscreen);
   }
 
 }
