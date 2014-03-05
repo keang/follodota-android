@@ -62,9 +62,9 @@ public class MatchDetailActivity extends YouTubeFailureRecoveryActivity implemen
   private LinearLayout baseLayout;
   private View otherViews;
   private ListView listView;
-  private Button infoButton;
   private boolean fullscreen;
   private boolean isInfoVisible;
+protected boolean clickedOnce;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -75,19 +75,11 @@ public class MatchDetailActivity extends YouTubeFailureRecoveryActivity implemen
     playerView = (YouTubePlayerView) findViewById(R.id.player);
     otherViews = findViewById(R.id.other_views);
     listView = (ListView) findViewById(R.id.game_list_view);
-    infoButton = (Button) findViewById(R.id.info_button);
-    infoButton.setOnClickListener(new OnClickListener() {
-		
-		@Override
-		public void onClick(View v) {
-			toggle(otherViews, 0);
-		}
-	});
     findViewById(R.id.close_info_button).setOnClickListener(new OnClickListener() {
 		
 		@Override
 		public void onClick(View v) {
-			toggle(otherViews, 0);
+			toggle(otherViews, playerView, 0);
 			if(!player.isPlaying()) player.play();
 		}
 	});
@@ -124,11 +116,12 @@ public class MatchDetailActivity extends YouTubeFailureRecoveryActivity implemen
 		@Override
 		public void onClick(View v) {
 			Log.d("playerview", "clicked");
-			toggle(otherViews, 0);
-		}
+				toggle(otherViews, playerView, 0);
+				clickedOnce=false;
+			}
 	});
     playerView.requestFocus();
-    toggle(otherViews, 5000);
+    toggle(otherViews, playerView, 4000);
     //doLayout(); 
   }
 
@@ -185,18 +178,25 @@ public class MatchDetailActivity extends YouTubeFailureRecoveryActivity implemen
     }
   }
 
-  private void toggle(final View v, final int wait_duration){
-	  final int animationResourceID=v.getVisibility()==View.VISIBLE?
-			  R.anim.translate_out_left:R.anim.translate_in_left; 
-		  
-	  final Animation animation = AnimationUtils.loadAnimation(this, animationResourceID);
-	    animation.setDuration(200);
-	    animation.setAnimationListener(new AnimationListener() {
+  private void toggle(final View infoPanel, final View videoPanel, final int wait_duration){
+	  final int videoPanelAnimationResourceID;
+	  final int infoPanelAnimationResourceID;
+	  if(infoPanel.getVisibility()==View.VISIBLE){
+		  infoPanelAnimationResourceID=R.anim.translate_out_left;
+		  videoPanelAnimationResourceID=R.anim.zoom_in;
+	  }else {
+		  infoPanelAnimationResourceID = R.anim.translate_in_left;
+		  videoPanelAnimationResourceID = R.anim.zoom_out;
+	  }
+	  
+	  final Animation videoPanelAnimation = AnimationUtils.loadAnimation(this, videoPanelAnimationResourceID);
+	  final Animation infoPanelAnimation = AnimationUtils.loadAnimation(this, infoPanelAnimationResourceID);
+	    infoPanelAnimation.setDuration(200);
+	    infoPanelAnimation.setAnimationListener(new AnimationListener() {
 	        @Override
 	        public void onAnimationStart(Animation animation) {
-	        	if (animationResourceID==R.anim.translate_in_left){
-	        		v.setVisibility(View.VISIBLE);
-	        		infoButton.setVisibility(View.GONE);
+	        	if (infoPanelAnimationResourceID==R.anim.translate_in_left){
+	        		infoPanel.setVisibility(View.VISIBLE);
 	        	}
 	        }
 
@@ -205,18 +205,20 @@ public class MatchDetailActivity extends YouTubeFailureRecoveryActivity implemen
 
 	        @Override
 	        public void onAnimationEnd(Animation animation) {
-	        	if (animationResourceID==R.anim.translate_out_left){
-	        		v.setVisibility(View.GONE);
-	        		infoButton.setVisibility(View.VISIBLE);
+	        	if (infoPanelAnimationResourceID==R.anim.translate_out_left){
+	        		infoPanel.setVisibility(View.GONE);
+	        		player.play();
 	        	}
 	        }
 	    });
+	    
 	    new Handler().postDelayed(new Runnable()
 	    {
 	       @Override
 	       public void run()
 	       {
-	         v.startAnimation(animation);
+	    	 videoPanel.startAnimation(videoPanelAnimation);
+	         infoPanel.startAnimation(infoPanelAnimation);
 	       }
 	    }, wait_duration);
   }
