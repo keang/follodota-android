@@ -41,6 +41,15 @@ public abstract class SerializableJSONBasedObject implements Serializable{
 		return string;
 	}
 	
+
+	/**
+	 * returns id, which most models have
+	 * @return
+	 */
+	public String getId() {
+		return getString("id");
+	}
+	
 	/**
 	 * Try to find "nestedkey" in "key"mObject, logs the error if any.
 	 * @param key eg. "home_team"

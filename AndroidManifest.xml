@@ -38,6 +38,9 @@
         <activity 
             android:name="com.follodota.TeamDetailActivity">
         </activity>
+        <activity 
+            android:name="com.follodota.LeagueDetailActivity">
+        </activity>
     </application>
 
 </manifest>
