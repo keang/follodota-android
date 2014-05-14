@@ -43,9 +43,9 @@ public class MatchesListAdapter extends BaseAdapter{
 		Match curMatch = (Match)mList.get(position);
 		holder.hometeam.setImageResource(curMatch.getHomeTeamLogo(mContext));
 		holder.awayteam.setImageResource(curMatch.getAwayTeamLogo(mContext));
-		holder.date.setText(curMatch.getPlayedDate());
+		if(curMatch.getPlayedDate()!=null)holder.date.setText(curMatch.getPlayedDate());
 		holder.round.setText(curMatch.getRound());
-		holder.caster.setText(curMatch.getCaster());
+		if(curMatch.getCasters()!=null)holder.caster.setText(curMatch.getCastersString());
 		holder.leagueName.setText(curMatch.getLeagueName());
 		return rowView;
 	}

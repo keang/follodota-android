@@ -3,6 +3,7 @@ package com.follodota.models;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import org.json.JSONArray;
@@ -12,6 +13,54 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.util.Log;
 
+/**
+ * Example json from api/v1:
+ * {
+            "home_team": {
+                "name": "The Retry",
+                "logo_x": 15,
+                "logo_y": 15
+            },
+            "away_team": {
+                "name": "Cleave",
+                "logo_x": 15,
+                "logo_y": 15
+            },
+            "last_game_at": "2014-03-13T12:00:00.000Z",
+            "round": "Group Stage : BO1",
+            "casters": [
+                {
+                    "name": "Zyori"
+                },
+                {
+                    "name": "Merlini"
+                }
+            ],
+            "game_count": 1,
+            "games": [
+                {
+                    "game_number": 1,
+                    "played_at": "2014-03-13T12:00:00.000Z",
+                    "youtube_link": "Eqnhy4GRwVE",
+                    "steam_game_id": null,
+                    "created_at": "2014-03-13T05:53:05.335Z",
+                    "updated_at": "2014-03-13T05:53:05.385Z"
+                }
+            ],
+            "league": {
+                "id": 1,
+                "name": "StarLadder Season 9",
+                "season": null,
+                "created_at": "2014-03-13T05:53:02.696Z",
+                "updated_at": "2014-03-13T05:53:02.696Z"
+            },
+            "winner_name": "cleave",
+            "created_at": "2014-03-13T05:53:05.272Z",
+            "updated_at": "2014-03-13T05:53:05.408Z"
+        }
+ * @author kaka
+ *
+ */
 public class Match extends SerializableJSONBasedObject{
 	public Match(JSONObject o) {
 		super(o);
@@ -84,8 +133,27 @@ public class Match extends SerializableJSONBasedObject{
 	 * 
 	 * @return caster for the first game, assume to be the same for the rest of the match
 	 */
-	public String getCaster() {
-		return getAllGames().get(0).getString("caster");
+	public ArrayList<String> getCasters() {
+		ArrayList<String> caster = new ArrayList<String>();
+		JSONArray jArray = getJSONArray("casters");
+		for(int i=0; i<jArray.length(); i++){
+			try {
+				caster.add(jArray.getJSONObject(i).getString("name"));
+			} catch (JSONException e) {
+				Log.e(getTag(), e.getMessage());
+			}
+		}
+		return caster;
+	}
+	
+	public String getCastersString(){
+		ArrayList<String> casters = getCasters();
+		String result = null ;
+		for(int i=0; i< casters.size(); i++){
+			result += casters.get(i);
+			if (i!=casters.size()-1) result += " & ";
+		}
+		return result;
 	}
 
 }

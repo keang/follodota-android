@@ -33,10 +33,6 @@ public class Team extends SerializableJSONBasedObject{
 	public String getName() {
 		return getString("name");
 	}
-
-	public String getId() {
-		return getString("id");
-	}
 }
 
 

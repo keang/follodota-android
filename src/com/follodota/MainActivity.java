@@ -1,6 +1,7 @@
 package com.follodota;
 
 import com.follodota.R;
+import com.follodota.models.League;
 import com.follodota.models.Match;
 import com.follodota.models.Team;
 
@@ -29,6 +30,7 @@ public class MainActivity extends FragmentActivity implements
 			Fragment fragment = null;
 			if(itemPosition==1) fragment = new TeamListFragment();
 			else if(itemPosition==0) fragment = new MatchListFragment();
+			else if(itemPosition==2) fragment = new LeagueListFragment();
 			getSupportFragmentManager().beginTransaction()
 				.replace(R.id.container, fragment).commit();
 			return true;
@@ -50,7 +52,8 @@ public class MainActivity extends FragmentActivity implements
 							android.R.id.text1, new String[] {
 									//getString(R.string.nav_title_league),
 									getString(R.string.nav_title_matches),
-									getString(R.string.nav_title_teams)
+									getString(R.string.nav_title_teams),
+									getString(R.string.nav_title_leagues)
 									}), this);
 		}
 		
@@ -100,5 +103,12 @@ public class MainActivity extends FragmentActivity implements
 			Intent detailIntent = new Intent(this, TeamDetailActivity.class);
 			detailIntent.putExtra(TeamDetailActivity.SELECTED_TEAM, itemAtPosition);
 			startActivity(detailIntent);
+		}
+
+		public void onLeagueSelected(League itemAtPosition) {
+			Intent detailIntent = new Intent(this, LeagueDetailActivity.class);
+			detailIntent.putExtra(LeagueDetailActivity.SELECTED_LEAGUE, itemAtPosition);
+			startActivity(detailIntent);
+			
 		}
 }
