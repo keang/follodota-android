@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.follodota"
-    android:versionCode="5"
-    android:versionName="0.3" >
+    android:versionCode="6"
+    android:versionName="0.4" >
 
     <uses-sdk
         android:minSdkVersion="11"
-        android:targetSdkVersion="18" />
+        android:targetSdkVersion="19" />
     <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:allowBackup="true"
@@ -30,10 +30,6 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".matchListActivity" />
-        </activity>
-        <activity 
-            android:name="com.follodota.MatchDetailActivity"
-            android:screenOrientation="landscape">
         </activity>
         <activity 
             android:name="com.follodota.TeamDetailActivity">

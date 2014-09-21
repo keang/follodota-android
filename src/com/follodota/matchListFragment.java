@@ -10,13 +10,21 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -35,9 +43,9 @@ import com.follodota.utils.MatchesListAdapter;
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
-public class MatchListFragment extends ListFragment {
+public class MatchListFragment extends Fragment {
 	private static final String TAG = "follodota.listfragment";
-	private static final String matchesIndexApi = "http://follodota.herokuapp.com/api/v1/matches.json";
+	private static final String matchesIndexApi = "http://follodota.herokuapp.com/api/v1/matches.json?page=";
     /**
      * The serialization (saved instance state) Bundle key representing the
      * activated item position. Only used on tablets.
@@ -48,6 +56,12 @@ public class MatchListFragment extends ListFragment {
      * The current activated item position. Only used on tablets.
      */
     private int mActivatedPosition = ListView.INVALID_POSITION;
+    
+    private Listener<JSONObject> matchesListener;
+    
+    private int mPage;
+    private MatchesListAdapter mAdapter;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
 
     /**
@@ -60,7 +74,7 @@ public class MatchListFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Listener<JSONObject> matchesListener = new Listener<JSONObject>() {
+        matchesListener = new Listener<JSONObject>() {
         	@Override
 			public void onResponse(JSONObject responseObject) {
 				ArrayList<Match> matchesList = new ArrayList<Match>();
@@ -79,46 +93,71 @@ public class MatchListFragment extends ListFragment {
 					}
 					if (m!=null)matchesList.add(m);
 				}
-				MatchesListAdapter mAdapter = new MatchesListAdapter(MatchListFragment.this.getActivity()
+				if(mAdapter!=null){
+					//this is not first page, append to list
+					mAdapter.appendList(matchesList);
+				} else {
+				    mAdapter = new MatchesListAdapter(MatchListFragment.this.getActivity()
 						, matchesList);
-				MatchListFragment.this.setListAdapter(mAdapter);
+                    ((ListView) getActivity().findViewById(R.id.matches_listview)).setAdapter(mAdapter);
+				}
+
+				mSwipeRefreshLayout.setRefreshing(false);
 			}
         };
+        mPage=1;
         
-		JsonObjectRequest listRequest = new JsonObjectRequest(matchesIndexApi, null, matchesListener, null);
-		//calling the api!
+    }
+
+    @Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+        final View fragmentView = inflater.inflate(R.layout.fragment_match_list, null); 
+        mSwipeRefreshLayout = (SwipeRefreshLayout) fragmentView.findViewById(R.id.swipeRefreshLayout_matchListFragment);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.primary_loading_color, R.color.secondary_loading_color,
+                R.color.primary_loading_color, R.color.secondary_loading_color);
+
+		mSwipeRefreshLayout.setEnabled(false);
+        ListView list = (ListView) fragmentView.findViewById(R.id.matches_listview);
+        list.setOnScrollListener(new AbsListView.OnScrollListener() {  
+        	  @Override
+        	  public void onScrollStateChanged(AbsListView view, int scrollState) {
+        	  }
+
+        	  @Override
+        	  public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        	    Log.d(TAG, "at the bottom: "+((visibleItemCount+firstVisibleItem)==totalItemCount));
+      		    if((visibleItemCount+firstVisibleItem)==totalItemCount){
+      		    	mSwipeRefreshLayout.setRefreshing(true);
+      		    	nextPage();
+      		    }
+        	  }
+        	});
+        
+        list.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+		        ((MainActivity)getActivity())
+		        	.onMatchSelected((Match) parent.getItemAtPosition(position));
+			}
+		});
+        requestServerForMatches(mPage);	
+        return fragmentView;
+	}
+
+	public void requestServerForMatches(int pageNumber){
+		JsonObjectRequest listRequest = new JsonObjectRequest(matchesIndexApi+pageNumber, null, matchesListener, null); //calling the api!
 		Log.d(TAG,"starting request");
 		FolloDotaRequest.getInstance(getActivity()).addRequest(listRequest);
     }
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        // Restore the previously serialized activated item position.
-        if (savedInstanceState != null
-                && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
-            setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
-        }
+    public void nextPage(){
+    	mPage++;
+    	requestServerForMatches(mPage);
     }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
-
-    @Override
-    public void onListItemClick(ListView listView, View view, int position, long id) {
-        super.onListItemClick(listView, view, position, id);
-        ((MainActivity)getActivity())
-        	.onMatchSelected((Match) listView.getItemAtPosition(position));
-    }
-
+    
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -128,26 +167,17 @@ public class MatchListFragment extends ListFragment {
         }
     }
 
-    /**
-     * Turns on activate-on-click mode. When this mode is on, list items will be
-     * given the 'activated' state when touched.
-     */
-    public void setActivateOnItemClick(boolean activateOnItemClick) {
-        // When setting CHOICE_MODE_SINGLE, ListView will automatically
-        // give items the 'activated' state when touched.
-        getListView().setChoiceMode(activateOnItemClick
-                ? ListView.CHOICE_MODE_SINGLE
-                : ListView.CHOICE_MODE_NONE);
-    }
-
-    private void setActivatedPosition(int position) {
-        if (position == ListView.INVALID_POSITION) {
-            getListView().setItemChecked(mActivatedPosition, false);
-        } else {
-            getListView().setItemChecked(position, true);
-        }
-
-        mActivatedPosition = position;
+    class ScrollRefreshLayout extends SwipeRefreshLayout{
+    	ListView mListView;
+		public ScrollRefreshLayout(Context context, ListView listview) {
+			super(context);
+		}
+		
+		@Override
+		public boolean canChildScrollUp()
+		{
+			return false;
+		}
     }
 }
 

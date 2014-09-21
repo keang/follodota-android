@@ -15,7 +15,7 @@ import com.follodota.models.Match;
 
 public class MatchesListAdapter extends BaseAdapter{
 	private final Context mContext;
-	private final List<Match> mList;
+	private List<Match> mList;
 	public MatchesListAdapter(Context context,List<Match> objects) {
 		super();
 		mContext = context;
@@ -63,6 +63,11 @@ public class MatchesListAdapter extends BaseAdapter{
 	@Override
 	public long getItemId(int position) {
 		return mList.indexOf(getItem(position));
+	}
+	
+	public void appendList(List<Match> newList){
+		mList.addAll(newList);
+		notifyDataSetChanged();
 	}
 	
 	class ViewHolder{
